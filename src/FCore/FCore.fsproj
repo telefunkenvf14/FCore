@@ -45,7 +45,20 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="DisplayControl.fs" />
+    <Compile Include="GenericFormat.fs" />
+    <Compile Include="ExplicitConversion.fs" />
+    <Compile Include="MklFunctions.fs" />
+    <Compile Include="MklControl.fs" />
+    <Compile Include="Vector.fs" />
+    <Compile Include="Matrix.fs" />
+    <Compile Include="Overloading.fs" />
+    <Compile Include="MklRng.fs" />
+    <Compile Include="Math.fs" />
+    <Compile Include="BasicStats.fs" />
+    <Compile Include="LinearAlgebra.fs" />
+    <Compile Include="Random.fs" />
     <None Include="Script.fsx" />
     <None Include="paket.references" />
     <None Include="paket.template" />
