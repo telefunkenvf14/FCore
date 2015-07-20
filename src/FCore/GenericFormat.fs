@@ -1,4 +1,4 @@
-﻿namespace Fmat.Numerics
+﻿namespace FCore
 
 module GenericFormatting =
     open System

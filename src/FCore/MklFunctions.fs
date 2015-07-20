@@ -1,13 +1,15 @@
-﻿namespace Fmat.Numerics
+﻿namespace FCore
 #nowarn "9"
 
 open System
 open System.Reflection
 open System.IO
+open System.IO.Compression
 open System.Runtime.InteropServices
 open System.ComponentModel
 open Microsoft.FSharp.NativeInterop
 open System.Security
+open System.Collections.Generic
 
 type internal CompCode =
     | Less = 0
@@ -24,22 +26,61 @@ type BoolPtr = nativeptr<bool>
 type internal MklFunctions() =
 
     [<Literal>]
-    static let dllName = "Fmat.Numerics.MKL.dll"
+    static let dllName = "FCore.MKL.dll"
+
+    [<Literal>]
+    static let x86Zip = "FCore.MKL.x86.zip"
+
+    [<Literal>]
+    static let x64Zip = "FCore.MKL.x64.zip"
 
     static do
-        let tempFolder = Path.GetTempPath()
-        let asm = Assembly.GetExecutingAssembly()
-        let asmPath = asm.Location
-        let dllPath = Path.Combine(Path.GetDirectoryName(asmPath), dllName)
-        use stream = asm.GetManifestResourceStream(dllName) 
-        let n = stream.Length |> int
-        let bytes = Array.zeroCreate<byte> n
-        stream.Read(bytes, 0, n) |> ignore
         try
-            File.WriteAllBytes(dllPath, bytes) 
-            MklFunctions.LoadLibrary_(dllPath)
-        with _ -> ()
-        ()
+            let BUFFERSIZE = 1000000
+            let decompress (data : byte[]) =
+                let buffer = Array.zeroCreate<byte> BUFFERSIZE
+                let returnVal = new List<byte>()
+                use memoryStream = new MemoryStream(data)
+                use deflateStream = new DeflateStream(memoryStream, CompressionMode.Decompress)
+                let mutable count = deflateStream.Read(buffer, 0, BUFFERSIZE)
+                while count > 0 do
+                    if count <> BUFFERSIZE then
+                        let tmpBuffer = Array.zeroCreate<byte> count
+                        Array.Copy(buffer, tmpBuffer, count)
+                        returnVal.AddRange(tmpBuffer)
+                    else
+                        returnVal.AddRange(buffer)
+                    count <- deflateStream.Read(buffer, 0, BUFFERSIZE)
+                returnVal.ToArray()
+
+            let tempFolder = Path.GetTempPath()
+            let asm = Assembly.GetExecutingAssembly()
+            let version = asm.GetName().Version
+            let mklFolder =
+                if Environment.Is64BitProcess then
+                    Path.Combine(tempFolder, "FCore", "x64", sprintf "v%d_%d_%d" version.Major version.Minor version.Build)
+                else
+                    Path.Combine(tempFolder, "FCore", "x86", sprintf "v%d_%d_%d" version.Major version.Minor version.Build)
+            let mklPath = Path.Combine(mklFolder, dllName)
+            let zipFile =
+                if Environment.Is64BitProcess then
+                    x64Zip
+                else
+                    x86Zip
+            if not <| Directory.Exists(mklFolder) then Directory.CreateDirectory(mklFolder) |> ignore
+            if not <| File.Exists(mklPath) then
+                if asm.GetManifestResourceNames() |> Array.exists (fun x -> x = zipFile) then
+                    use stream = asm.GetManifestResourceStream(zipFile)
+                    let n = stream.Length |> int
+                    let buffer = Array.zeroCreate<byte> n
+                    stream.Read(buffer, 0, n) |> ignore
+                    let bytes = decompress buffer
+                    File.WriteAllBytes(mklPath, bytes) 
+
+            if File.Exists(mklPath) then
+                MklFunctions.LoadLibrary_(mklPath) |> ignore
+
+        with ex -> System.Windows.Forms.MessageBox.Show(ex.Message) |> ignore
 
     static let validateRetCode(code : int) =
         match code with
@@ -802,7 +843,7 @@ type internal MklFunctions() =
 
 
 
-    static member LoadLibrary_(dllPath) = LoadLibrary(dllPath) |> ignore
+    static member LoadLibrary_(dllPath) = LoadLibrary(dllPath)
 
     static member D_Create_Array(length : int64, array) =
         d_create_array(new IntPtr(length), array) |> validateRetCode

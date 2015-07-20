@@ -1,4 +1,4 @@
-﻿namespace Fmat.Numerics
+﻿namespace FCore
 
 module ExplicitConversion =
     open System

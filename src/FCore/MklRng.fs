@@ -1,4 +1,4 @@
-﻿namespace Fmat.Numerics
+﻿namespace FCore
 #nowarn "9"
 
 open System

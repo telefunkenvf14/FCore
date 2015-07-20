@@ -1,4 +1,4 @@
-﻿namespace Fmat.Numerics
+﻿namespace FCore
 open System
 open ExplicitConversion
 open Overloading
