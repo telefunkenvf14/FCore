@@ -1,7 +1,7 @@
 (*** hide ***)
 // This block of code is omitted in the generated HTML documentation. Use 
 // it to define helpers that you do not want to show in the documentation.
-#I "../../bin"
+#I "../../bin/FCore"
 
 (**
 FCore
@@ -29,7 +29,8 @@ This example demonstrates using a function defined in this sample library.
 #r "FCore.dll"
 open FCore
 
-printfn "hello = %i" <| Library.hello 0
+let matrix = new Matrix([[1.0;2.0;3.0]
+                         [4.0;5.0;6.0]])
 
 (**
 Some more info

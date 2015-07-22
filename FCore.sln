@@ -9,11 +9,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FCore", "src\FCore\FCore.fsproj", "{949BEAFD-6F65-42AB-B4EF-BFF6DBC29C8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A63D210B-E21F-40FA-83A2-8E38FA3545C9} = {A63D210B-E21F-40FA-83A2-8E38FA3545C9}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 		build1.fsx = build1.fsx
+		build_scaffold.fsx = build_scaffold.fsx
 		README.md = README.md
 		RELEASE_NOTES.md = RELEASE_NOTES.md
 	EndProjectSection

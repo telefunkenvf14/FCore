@@ -9,7 +9,6 @@ open Fake.AssemblyInfoFile
 open Fake.ReleaseNotesHelper
 open System
 open System.IO
-open System.IO.Compression
 #if MONO
 #else
 #load "packages/SourceLink.Fake/tools/Fake.fsx"
@@ -68,16 +67,13 @@ let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/Statfactory"
 // Read additional information from the release notes document
 let release = LoadReleaseNotes "RELEASE_NOTES.md"
 
-let compressFile (path : string) =
-    let path = Path.GetFullPath(path)
-    let data = File.ReadAllBytes path
-    use memoryStream = new MemoryStream()
-    use deflateStream = new DeflateStream(memoryStream, CompressionMode.Compress)
-    deflateStream.Write(data, 0, data.Length)
-    deflateStream.Flush()
-    deflateStream.Close()
-    let res = memoryStream.ToArray()
-    File.WriteAllBytes(path.Replace("dll", "zip"), res)
+// Helper active pattern for project types
+let (|Fsproj|Csproj|Vbproj|) (projFileName:string) = 
+    match projFileName with
+    | f when f.EndsWith("fsproj") -> Fsproj
+    | f when f.EndsWith("csproj") -> Csproj
+    | f when f.EndsWith("vbproj") -> Vbproj
+    | _                           -> failwith (sprintf "Project file %s not supported. Unknown project type." projFileName)
 
 // Generate assembly info files with the right version & up-to-date information
 Target "AssemblyInfo" (fun _ ->
@@ -96,16 +92,21 @@ Target "AssemblyInfo" (fun _ ->
           (getAssemblyInfoAttributes projectName)
         )
 
-    !! "src/**/*.fsproj"
+    !! "src/**/*.??proj"
     |> Seq.map getProjectDetails
-    |> Seq.iter (fun (projFileName, projectName, folderName, attributes) -> CreateFSharpAssemblyInfo (folderName @@ "AssemblyInfo.fs") attributes)
+    |> Seq.iter (fun (projFileName, projectName, folderName, attributes) ->
+        match projFileName with
+        | Fsproj -> CreateFSharpAssemblyInfo (folderName @@ "AssemblyInfo.fs") attributes
+        | Csproj -> CreateCSharpAssemblyInfo ((folderName @@ "Properties") @@ "AssemblyInfo.cs") attributes
+        | Vbproj -> CreateVisualBasicAssemblyInfo ((folderName @@ "My Project") @@ "AssemblyInfo.vb") attributes
+        )
 )
 
 // Copies binaries from default VS location to expected bin folder
 // But keeps a subdirectory structure for each project in the 
 // src folder to support multiple project outputs
 Target "CopyBinaries" (fun _ ->
-    !! "src/**/*.fsproj"
+    !! "src/**/*.??proj"
     |>  Seq.map (fun f -> ((System.IO.Path.GetDirectoryName f) @@ "bin/Release", "bin" @@ (System.IO.Path.GetFileNameWithoutExtension f)))
     |>  Seq.iter (fun (fromDir, toDir) -> CopyDir toDir fromDir (fun _ -> true))
 )
@@ -114,31 +115,20 @@ Target "CopyBinaries" (fun _ ->
 // Clean build results
 
 Target "Clean" (fun _ ->
-    CleanDirs ["bin/FCore"; "temp"]
+    CleanDirs ["bin"; "temp"]
 )
 
 Target "CleanDocs" (fun _ ->
     CleanDirs ["docs/output"]
 )
 
-//Zip MKL dlls
-Target "ZipMKL" (fun _ ->
-    compressFile "./bin/FCore.MKL/FCore.MKL.x86.dll"
-    compressFile "./bin/FCore.MKL/FCore.MKL.x64.dll"
-)
-
 // --------------------------------------------------------------------------------------
 // Build library & test project
-Target "Build" (fun _ ->
-    !! "src/**/*.fsproj"
-      |> MSBuildRelease "" "Build"
-      |> ignore
-)
 
-Target "BuildTests" (fun _ ->
-    !! "tests/**/*.fsproj"
-      |> MSBuildRelease "" "Build"
-      |> ignore
+Target "Build" (fun _ ->
+    !! solutionFile
+    |> MSBuildRelease "" "Rebuild"
+    |> ignore
 )
 
 // --------------------------------------------------------------------------------------
@@ -330,45 +320,39 @@ Target "BuildPackage" DoNothing
 Target "All" DoNothing
 
 "Clean"
-  ==> "ZipMKL"
+  ==> "AssemblyInfo"
   ==> "Build"
-  ==> "BuildTests"
+  ==> "CopyBinaries"
   ==> "RunTests"
+  ==> "GenerateReferenceDocs"
+  ==> "GenerateDocs"
+  ==> "All"
+  =?> ("ReleaseDocs",isLocalBuild)
 
-//"Clean"
-//  ==> "AssemblyInfo"
-//  ==> "Build"
-//  ==> "CopyBinaries"
-//  ==> "RunTests"
-//  ==> "GenerateReferenceDocs"
-//  ==> "GenerateDocs"
-//  ==> "All"
-//  =?> ("ReleaseDocs",isLocalBuild)
-//
-//"All" 
-//#if MONO
-//#else
-//  =?> ("SourceLink", Pdbstr.tryFind().IsSome )
-//#endif
-//  ==> "NuGet"
-//  ==> "BuildPackage"
-//
-//"CleanDocs"
-//  ==> "GenerateHelp"
-//  ==> "GenerateReferenceDocs"
-//  ==> "GenerateDocs"
-//
-//"CleanDocs"
-//  ==> "GenerateHelpDebug"
-//
-//"GenerateHelp"
-//  ==> "KeepRunning"
-//    
-//"ReleaseDocs"
-//  ==> "Release"
-//
-//"BuildPackage"
-//  ==> "PublishNuget"
-//  ==> "Release"
+"All" 
+#if MONO
+#else
+  =?> ("SourceLink", Pdbstr.tryFind().IsSome )
+#endif
+  ==> "NuGet"
+  ==> "BuildPackage"
+
+"CleanDocs"
+  ==> "GenerateHelp"
+  ==> "GenerateReferenceDocs"
+  ==> "GenerateDocs"
+
+"CleanDocs"
+  ==> "GenerateHelpDebug"
+
+"GenerateHelp"
+  ==> "KeepRunning"
+    
+"ReleaseDocs"
+  ==> "Release"
+
+"BuildPackage"
+  ==> "PublishNuget"
+  ==> "Release"
 
 RunTargetOrDefault "All"

@@ -109,6 +109,16 @@ module Overloading =
         static member EvalIn (DummyType, expr : BoolMatrixExpr, res : BoolMatrix option) = BoolMatrixExpr.EvalIn(expr, res)
         static member EvalIn (DummyType, expr : MatrixExpr, res : Matrix option) = MatrixExpr.EvalIn(expr, res)
 
+        static member IIf (DummyType, boolExpr : BoolVectorExpr, trueExpr : BoolVectorExpr, falseExpr : BoolVectorExpr) =
+            BoolVectorExpr.IfFunction(boolExpr, trueExpr, falseExpr)
+        static member IIf (DummyType, boolExpr : BoolVectorExpr, trueExpr : VectorExpr, falseExpr : VectorExpr) =
+            VectorExpr.IfFunction(boolExpr, trueExpr, falseExpr)
+        static member IIf (DummyType, boolExpr : BoolMatrixExpr, trueExpr : BoolMatrixExpr, falseExpr : BoolMatrixExpr) =
+            BoolMatrixExpr.IfFunction(boolExpr, trueExpr, falseExpr)
+        static member IIf (DummyType, boolExpr : BoolMatrixExpr, trueExpr : MatrixExpr, falseExpr : MatrixExpr) =
+            MatrixExpr.IfFunction(boolExpr, trueExpr, falseExpr)
+
+
         static member Chol (DummyType, x) = Matrix.Chol(x)
 
         static member CholInv (DummyType, x) = Matrix.CholInv(x)
