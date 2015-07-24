@@ -485,7 +485,7 @@ type BoolMatrix(rowCount : int64, colCount : int64, colMajorDataVector : BoolVec
             let moreCols = colCount > (showCols |> int64)
             let arr = Array2D.init showRows showCols (fun row col -> this.[row, col])
             let formattedArray = DisplayControl.FormatArray2D(arr, format, moreRows, moreCols)
-            sprintf "BoolMatrix size = [%d,%d]\r\n%s" rowCount colCount formattedArray
+            sprintf "Size = [%d,%d]\r\n%s" rowCount colCount formattedArray
 
 //**************************************BoolMatrixExpr**************************************************************************************
 
@@ -1966,7 +1966,7 @@ and Matrix(rowCount : int64, colCount : int64, colMajorDataVector : Vector) =
             let moreCols = colCount > (showCols |> int64)
             let arr = Array2D.init showRows showCols (fun row col -> this.[row, col])
             let formattedArray = DisplayControl.FormatArray2D(arr, format, moreRows, moreCols)
-            sprintf "Matrix size = [%d,%d]\r\n%s" rowCount colCount formattedArray
+            sprintf "Size = [%d,%d]\r\n%s" rowCount colCount formattedArray
 
     interface IDisposable with
         member this.Dispose() = this.ColMajorDataVector.DoDispose(true)

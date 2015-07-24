@@ -1,13 +1,10 @@
 ### 1.0 - Unreleased
-* More awesome stuff coming
-* Added SourceLink for Source Indexing PDB
+* boolean and double precision dense vector and 2D matrix types (BoolVector, Vector, BoolMatrix, Matrix)
+* dense matrix factorizations and solvers, MKL accelerated
+* MKL random number generators
+* basic statistics for Vector and Matrix types
+* vector and matrix expressions with evaluation
+* MKL vector functions
 
-#### 0.5.1-beta - November 6 2013
-* Improved quality of solution-wide README.md files
- 
-#### 0.5.0-beta - October 29 2013
-* Improved quality of solution-wide README.md files
 
-#### 0.0.1-beta - October 24 2013
-* Changed name from fsharp-project-scaffold to FSharp.ProjectScaffold
-* Initial release
+

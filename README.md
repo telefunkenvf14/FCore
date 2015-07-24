@@ -1,31 +1,14 @@
-[![Issue Stats](http://issuestats.com/github/fsprojects/ProjectScaffold/badge/issue)](http://issuestats.com/github/fsprojects/ProjectScaffold)
-[![Issue Stats](http://issuestats.com/github/fsprojects/ProjectScaffold/badge/pr)](http://issuestats.com/github/fsprojects/ProjectScaffold)
+# FCore Numerical Library
 
-# ProjectScaffold
+Copyright (c) 2007-2015 StatFactory Ltd
 
-This project can be used to scaffold a prototypical .NET solution including file system layout and tooling. This includes a build process that: 
+FCore is an open source high performance F# numerical library. It contains functions for construction and manipulation of vectors and matrices, including matrix factorizations and solvers, random number generators, vector functions and basic stats.
 
-* updates all AssemblyInfo files
-* compiles the application and runs all test projects
-* generates [SourceLinks](https://github.com/ctaggart/SourceLink)
-* generates API docs based on XML document tags
-* generates [documentation based on Markdown files](http://fsprojects.github.io/ProjectScaffold/writing-docs.html)
-* generates [NuGet](http://www.nuget.org) packages
-* and allows a simple [one step release process](http://fsprojects.github.io/ProjectScaffold/release-process.html).
-
-In order to start the scaffolding process run 
-
-    $ build.cmd // on windows    
-    $ build.sh  // on mono
+FCore is a .NET library but for maximum performance on Intel it is accelerated by Intel Math Kernel Library. Also, it uses native C functions to allocate memory so that .NET memory limits are bypassed and Garbage Collection is minimized.
+ 
+FCore source code on GitHub is covered under the terms of the MIT/X11 license. Please note that MKL is not open source and therefore FCore binary distribution on Nuget, which contains MKL, is available under a separate license.
     
 Read the [Getting started tutorial](http://fsprojects.github.io/ProjectScaffold/index.html#Getting-started) to learn more.
 
 Documentation: http://fsprojects.github.io/ProjectScaffold
 
-## Maintainer(s)
-
-- [@forki](https://github.com/forki)
-- [@pblasucci](https://github.com/pblasucci)
-- [@sergey-tihon](https://github.com/sergey-tihon)
-
-The default maintainer account for projects under "fsprojects" is [@fsprojectsgit](https://github.com/fsprojectsgit) - F# Community Project Incubation Space (repo management)

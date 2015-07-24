@@ -112,12 +112,13 @@ let buildReference () =
 let buildDocumentation () =
 
   // First, process files which are placed in the content root directory.
-
+  let fsi = FsiEvaluator()
   Literate.ProcessDirectory
     ( content, docTemplate, output, replacements = ("root", root)::info,
       layoutRoots = layoutRootsAll.["en"],
       generateAnchors = true,
-      processRecursive = false)
+      processRecursive = false,
+      fsiEvaluator = fsi)
 
   // And then process files which are placed in the sub directories
   // (some sub directories might be for specific language).
@@ -136,13 +137,14 @@ let buildDocumentation () =
     Literate.ProcessDirectory
       ( dir, docTemplate, output @@ dirname, replacements = ("root", root)::info,
         layoutRoots = layoutRoots,
-        generateAnchors = true )
+        generateAnchors = true,
+        fsiEvaluator = fsi)
 
 // Generate
 copyFiles()
-//#if HELP
+#if HELP
 buildDocumentation()
-//#endif
+#endif
 #if REFERENCE
 buildReference()
 #endif

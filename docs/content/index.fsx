@@ -3,11 +3,12 @@
 // it to define helpers that you do not want to show in the documentation.
 #I "../../bin/FCore"
 
+
 (**
-FCore
+FCore Numerical Library
 ======================
 
-Documentation
+FCore is a high performance F# numerical library.
 
 <div class="row">
   <div class="span1"></div>
@@ -23,46 +24,64 @@ Documentation
 Example
 -------
 
-This example demonstrates using a function defined in this sample library.
+This code example demonstrates using various functions defined in this library.
 
 *)
+
 #r "FCore.dll"
 open FCore
+open FCore.Math
+open FCore.Random
+open FCore.LinearAlgebra
+open FCore.BasicStats
 
-let matrix = new Matrix([[1.0;2.0;3.0]
-                         [4.0;5.0;6.0]])
+let rng = new MT19937Rng()
+let vector1 : Vector = rand rng 5
+let matrix1 = rand rng 5 5
+let vector2 = exp(vector1) + 2.0
+let matrix2 = exp(matrix1) + 2.0
+let l, u, p = lu matrix1
+let variance1 = var vector1
+let variance2 = var matrix1 ColumnAxis
+
+
+(** And the variable `matrix1` has the following value: *)
+(*** include-value: matrix1 ***)
 
 (**
-Some more info
 
-Samples & documentation
+Documentation
 -----------------------
 
-The library comes with comprehensible documentation. 
-It can include tutorials automatically generated from `*.fsx` files in [the content folder][content]. 
-The API reference is automatically generated from Markdown comments in the library implementation.
+The library comes with a comprehensive library guide: 
 
- * [Tutorial](tutorial.html) contains a further explanation of this sample library.
+ * [Introduction](introduction.html) contains an overview of the library.
+ * [BoolVector](BoolVector.html) introduces BoolVector type and related functions
+ * [Vector](Vector.html) introduces Vector type and related functions
+ * [BoolMatrix](BoolMatrix.html) introduces BoolMatrix type and related functions
+ * [Matrix](Matrix.html) introduces Matrix type and related functions
+ * [Linear Algebra](LinearAlgebra.html) introduces matrix factorizations and linear solvers
+ * [Vector and Matrix Functions](VectorAndMatrixFunctions.html) introduces vector and matrix functions
+ * [Random Number Generators](RandomNumberGenerators.html) introduces random number generators
+ * [Basic Stats](BasicStats.html) introduces basic statistical functions
+ * [Vector and Matrix Expressions](VectorAndMatrixExpressions.html) introduces vector and matrix expressions
 
- * [API Reference](reference/index.html) contains automatically generated documentation for all types, modules
-   and functions in the library. This includes additional brief samples on using most of the
-   functions.
- 
+   
 Contributing and copyright
 --------------------------
 
 The project is hosted on [GitHub][gh] where you can [report issues][issues], fork 
 the project and submit pull requests. If you're adding a new public API, please also 
-consider adding [samples][content] that can be turned into a documentation. You might
-also want to read the [library design notes][readme] to understand how it works.
+consider adding [samples][content] that can be turned into a documentation.
 
-The library is available under Public Domain license, which allows modification and 
-redistribution for both commercial and non-commercial purposes. For more information see the 
-[License file][license] in the GitHub repository. 
+The library source code is available under MIT/X11 license. For more information see the 
+[License file][license] in the GitHub repository.
 
-  [content]: https://github.com/fsprojects/FCore/tree/master/docs/content
-  [gh]: https://github.com/fsprojects/FCore
-  [issues]: https://github.com/fsprojects/FCore/issues
-  [readme]: https://github.com/fsprojects/FCore/blob/master/README.md
-  [license]: https://github.com/fsprojects/FCore/blob/master/LICENSE.txt
+The library uses Intel Math Kernel Library for high performance. This software is not open source and therefore FCore distribution on Nuget has its own license. 
+
+  [content]: https://github.com/Statfactory/FCore/tree/master/docs/content
+  [gh]: https://github.com/Statfactory/FCore
+  [issues]: https://github.com/Statfactory/FCore/issues
+  [readme]: https://github.com/Statfactory/FCore/blob/master/README.md
+  [license]: https://github.com/Statfactory/FCore/blob/master/LICENSE.txt
 *)
